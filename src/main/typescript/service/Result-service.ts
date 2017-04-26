@@ -63,24 +63,23 @@ update(data: any): Observable<Result> {
         const documentClient = new DocumentClient();
         const params = {
             TableName: "Results",
+            IndexName: "ResultInfo",
             Key: {
-                Candidate_id: data.Candidate_id,
+                Qsn: data.Qsn,
             },
             ExpressionAttributeNames: {
-                '#fn': 'firstName',
-                '#ln': 'lastName',
-                '#em': 'email'
+                '#C_ans': 'C_ans',
+                '#ans': 'ans'
             },
             ExpressionAttributeValues: {
-                ':fn': data.firstName,
-                ':ln': data.lastName,
-                ':em': data.email,
+                ':C_ans': data.C_ans,
+                ':ans': data.ans
             },
-            UpdateExpression: 'SET #fn = :fn, #ln = :ln, #em = :em',
+            UpdateExpression: 'SET #C_ans = :C_ans, #ans = :ans',
             ReturnValues: 'ALL_NEW',
         };
 
-        return Observable.create((observer:Observer<Candidate>) => {
+        return Observable.create((observer:Observer<Result>) => {
 
             documentClient.update(params, (err, data: any) => {
                 if(err) {
