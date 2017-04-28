@@ -1,24 +1,36 @@
 
 import { QuestionFacade } from '../facade/Question-facade';
+import { QsnIdsFacade } from '../facade/QsnIds-facade';
 import { Injector } from '@angular/core';
 import { HttpContextImpl } from "../http/http-context-impl";
 
-export class GetQsnIdsHandler {
+export class GetQsnHandler {
 
     static getQsn (httpContext:HttpContextImpl,injector:Injector) : void {
+        
 
-        // injector.get(QuestionFacade).getAll()
-        //     .subscribe(result => {
-        //          httpContext.ok(200, result);
-        //          console.log("myresult = ",result);
-        //         injector.get(QuestionFacade).getAllBookings(result)
-        //             .subscribe(result1 => {
-        //                 console.log("myresult = ",result1);
-        //                 httpContext.ok(200, result1);
-        //             });
-        //       //  httpContext.ok(200, result);
-        //     },  err => {
-        //         httpContext.fail(err, 500);
-//         });
+    let pathParameters = httpContext.getPathParameters();
+    console.log(JSON.stringify(pathParameters));
+
+   // let dataFromUI = httpContext.getRequestBody();
+    let data = httpContext.getRequestBody();
+
+
+
+        injector.get(QsnIdsFacade).getQsnId(data["PaperId"])
+            .subscribe(result => {
+
+               // httpContext.ok(200, result);
+                console.log("result=",result[0].QsnId);
+        // injector.get(QuestionFacade).getQsn(result[data["QsnNo"]].QsnId, data["Category"])        
+                  injector.get(QuestionFacade).getQsn(result[data["QsnNo"]].QsnId,  data["Category"])
+                    .subscribe(result1 => {
+                        console.log("Qsn = ",result1);
+                        httpContext.ok(200, result1);
+                         
+                 });
+            },  err => {
+                 httpContext.fail(err, 500);
+        });
     }
  }

@@ -18,7 +18,7 @@ export class QuestionServiceImpl {
         console.log("in QsnPaperServiceImpl constructor()");
     }
 
-        getQsn(data:any): Observable<Question> {
+        getQsn(QsnId:string, Category:string): Observable<Question> {
         console.log("in QsnPaperServiceImpl get()");
         var Q_array = ["Question1","Question2","Question6","Question7"];
         const queryParams: DynamoDB.Types.QueryInput = {
@@ -30,8 +30,8 @@ export class QuestionServiceImpl {
                 "#QsnId" : "QsnId"
             },
             ExpressionAttributeValues: {
-                ":Category": "Java",
-                ":QsnId" : data[0].QsnId
+                ":Category": Category,
+                ":QsnId" : QsnId
             },
             
         }
@@ -54,7 +54,7 @@ export class QuestionServiceImpl {
                 data.Items.forEach((item) => {
                     console.log(`Category ${item.Category}`);
                     console.log(`Qsn ${item.Qsn}`);
-                    console.log(`Curct_ans ${item.curct_ans[1]}`);
+                    console.log(`Curct_ans ${item.curct_ans}`);
                     console.log(`Opt1 ${item.Opt1}`);
                 });
                 

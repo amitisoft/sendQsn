@@ -12,10 +12,10 @@ export class QuestionFacade {
         console.log("in QsnPaperFacade constructor()");
     }
 
-    getQsn(data:any): Observable<QuestionDto> {
+    getQsn(QsnId:string, Category:string): Observable<QuestionDto> {
         console.log("in QsnPaperFacade getAll()");
 
-        return this.QuestionService.getQsn(data);
+        return this.QuestionService.getQsn(QsnId,Category);
             // .map((candidates) => {
             //     return {
             //         candidates: candidates.map(this.mapCandidateToDto)

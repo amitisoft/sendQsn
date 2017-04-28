@@ -97,6 +97,44 @@
                     "execute-api:Invoke"
                   ],
                   "Resource": "arn:aws:execute-api:us-east-1:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem"
+                  ],
+                  "Resource": "arn:aws:dynamodb:us-east-1:*:table/QuestionId"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "execute-api:Invoke"
+                  ],
+                  "Resource": "arn:aws:execute-api:us-east-1:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem"
+                  ],
+                  "Resource": "arn:aws:dynamodb:us-east-1:*:table/Result"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "execute-api:Invoke"
+                  ],
+                  "Resource": "arn:aws:execute-api:us-east-1:*:*"
                 }
               ]
             }
@@ -123,7 +161,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/shortlist-template/dev/1493303088777-2017-04-27T14:24:48.777Z/shortlist-template.zip"
+          "S3Key": "serverless/shortlist-template/dev/1493384022182-2017-04-28T12:53:42.182Z/shortlist-template.zip"
         },
         "FunctionName": "shortlist-template-dev-getAllQsnIdsFunction",
         "Handler": "handler.getAllQsnIdsFunction",
@@ -149,14 +187,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "GetAllQsnIdsFunctionLambdaVersionqTEQVLqthlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0": {
+    "GetAllQsnIdsFunctionLambdaVersionYAqlUFne50cBIiMzi8mer60vzsLvi7lGldggztZA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetAllQsnIdsFunctionLambdaFunction"
         },
-        "CodeSha256": "qTEQVLq+thlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0="
+        "CodeSha256": "YAq+lUFne50cBIiMzi8m+er60vzsLvi7lG+ldggztZA="
       }
     },
     "UpdateResultFunctionLambdaFunction": {
@@ -166,7 +204,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/shortlist-template/dev/1493303088777-2017-04-27T14:24:48.777Z/shortlist-template.zip"
+          "S3Key": "serverless/shortlist-template/dev/1493384022182-2017-04-28T12:53:42.182Z/shortlist-template.zip"
         },
         "FunctionName": "shortlist-template-dev-updateResultFunction",
         "Handler": "handler.updateResultFunction",
@@ -192,14 +230,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "UpdateResultFunctionLambdaVersionqTEQVLqthlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0": {
+    "UpdateResultFunctionLambdaVersionYAqlUFne50cBIiMzi8mer60vzsLvi7lGldggztZA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "UpdateResultFunctionLambdaFunction"
         },
-        "CodeSha256": "qTEQVLq+thlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0="
+        "CodeSha256": "YAq+lUFne50cBIiMzi8m+er60vzsLvi7lG+ldggztZA="
       }
     },
     "ApiGatewayRestApi": {
@@ -322,7 +360,7 @@
               "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'",
                 "method.response.header.Access-Control-Allow-Credentials": "'false'"
               },
               "ResponseTemplates": {
@@ -377,10 +415,10 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayMethodApiUpdateresultGet": {
+    "ApiGatewayMethodApiUpdateresultPost": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "HttpMethod": "GET",
+        "HttpMethod": "POST",
         "RequestParameters": {},
         "ResourceId": {
           "Ref": "ApiGatewayResourceApiUpdateresult"
@@ -415,7 +453,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1493303088799": {
+    "ApiGatewayDeployment1493384022204": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -425,7 +463,7 @@
       },
       "DependsOn": [
         "ApiGatewayMethodApiAllqsnidsGet",
-        "ApiGatewayMethodApiUpdateresultGet"
+        "ApiGatewayMethodApiUpdateresultPost"
       ]
     },
     "GetAllQsnIdsFunctionLambdaPermissionApiGateway": {
@@ -597,13 +635,13 @@
     "GetAllQsnIdsFunctionLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetAllQsnIdsFunctionLambdaVersionqTEQVLqthlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0"
+        "Ref": "GetAllQsnIdsFunctionLambdaVersionYAqlUFne50cBIiMzi8mer60vzsLvi7lGldggztZA"
       }
     },
     "UpdateResultFunctionLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "UpdateResultFunctionLambdaVersionqTEQVLqthlBxJVY5O4tmPY7d42uDqsw6v1rzVtOCG0"
+        "Ref": "UpdateResultFunctionLambdaVersionYAqlUFne50cBIiMzi8mer60vzsLvi7lGldggztZA"
       }
     },
     "ServiceEndpoint": {

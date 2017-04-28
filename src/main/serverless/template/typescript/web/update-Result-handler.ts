@@ -11,15 +11,11 @@ export class updateResultHandler {
         console.log(JSON.stringify(pathParameters));
 
         let data = httpContext.getRequestBody();
-        
+        console.log("data = ",data);
         injector.get(ResultFacade).update(data)
             .subscribe(result => {
                 httpContext.ok(200, result);
-                //   injector.get(ResultFacade).getQsn(result)
-                //     .subscribe(result1 => {
-                //         console.log("Qsn = ",result1);
-                //         httpContext.ok(200, result1);
-                //     });
+               
             },  err => {
                 httpContext.fail(err, 500);
         });

@@ -47,12 +47,12 @@ module.exports =
 
 	"use strict";
 	__webpack_require__(1);
-	var get_QsnIds_handler_1 = __webpack_require__(2);
-	var app_context_1 = __webpack_require__(352);
+	var get_Question_handler_1 = __webpack_require__(2);
+	var app_context_1 = __webpack_require__(350);
 	var execution_context_impl_1 = __webpack_require__(353);
 	//exports.getAllCandidatesFunction = ExecutionContextImpl.createHttpHandler(AppProviders, GetCandidateHandler.getAllCandidates);
 	//exports.findCandiateByIdFunction = ExecutionContextImpl.createHttpHandler(AppProviders, GetCandidateHandler.findCandidateById);
-	exports.getAllQsnIdsFunction = execution_context_impl_1.ExecutionContextImpl.createHttpHandler(app_context_1.AppProviders, get_QsnIds_handler_1.GetQsnIdsHandler.getQsnIds);
+	exports.getAllQsnIdsFunction = execution_context_impl_1.ExecutionContextImpl.createHttpHandler(app_context_1.AppProviders, get_Question_handler_1.GetQsnHandler.getQsn);
 	//exports.updateResultFunction = ExecutionContextImpl.createHttpHandler(AppProviders, updateResultHandler.updateResult); 
 
 
@@ -1191,35 +1191,33 @@ module.exports =
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var QsnIds_facade_1 = __webpack_require__(3);
-	var Question_facade_1 = __webpack_require__(348);
-	var Result_facade_1 = __webpack_require__(350);
-	var GetQsnIdsHandler = (function () {
-	    function GetQsnIdsHandler() {
+	var Question_facade_1 = __webpack_require__(3);
+	var QsnIds_facade_1 = __webpack_require__(348);
+	var GetQsnHandler = (function () {
+	    function GetQsnHandler() {
 	    }
-	    GetQsnIdsHandler.getQsnIds = function (httpContext, injector) {
+	    GetQsnHandler.getQsn = function (httpContext, injector) {
 	        var pathParameters = httpContext.getPathParameters();
 	        console.log(JSON.stringify(pathParameters));
+	        // let dataFromUI = httpContext.getRequestBody();
 	        var data = httpContext.getRequestBody();
-	        injector.get(QsnIds_facade_1.QsnIdsFacade).getAll()
+	        injector.get(QsnIds_facade_1.QsnIdsFacade).getQsnId(data["PaperId"])
 	            .subscribe(function (result) {
-	            httpContext.ok(200, result);
-	            injector.get(Question_facade_1.QuestionFacade).getQsn(result)
+	            // httpContext.ok(200, result);
+	            console.log("result=", result[0].QsnId);
+	            // injector.get(QuestionFacade).getQsn(result[data["QsnNo"]].QsnId, data["Category"])        
+	            injector.get(Question_facade_1.QuestionFacade).getQsn(result[data["QsnNo"]].QsnId, data["Category"])
 	                .subscribe(function (result1) {
 	                console.log("Qsn = ", result1);
 	                httpContext.ok(200, result1);
-	                injector.get(Result_facade_1.ResultFacade).update(data)
-	                    .subscribe(function (result2) {
-	                    httpContext.ok(200, result2);
-	                });
 	            });
 	        }, function (err) {
 	            httpContext.fail(err, 500);
 	        });
 	    };
-	    return GetQsnIdsHandler;
+	    return GetQsnHandler;
 	}());
-	exports.GetQsnIdsHandler = GetQsnIdsHandler;
+	exports.GetQsnHandler = GetQsnHandler;
 
 
 /***/ }),
@@ -1237,28 +1235,28 @@ module.exports =
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(4);
-	var QsnIds_service_1 = __webpack_require__(38);
-	var QsnIdsFacade = (function () {
-	    function QsnIdsFacade(QsnIdsService) {
-	        this.QsnIdsService = QsnIdsService;
+	var Question_service_1 = __webpack_require__(38);
+	var QuestionFacade = (function () {
+	    function QuestionFacade(QuestionService) {
+	        this.QuestionService = QuestionService;
 	        console.log("in QsnPaperFacade constructor()");
 	    }
-	    QsnIdsFacade.prototype.getAll = function () {
+	    QuestionFacade.prototype.getQsn = function (QsnId, Category) {
 	        console.log("in QsnPaperFacade getAll()");
-	        return this.QsnIdsService.getAll();
+	        return this.QuestionService.getQsn(QsnId, Category);
 	        // .map((candidates) => {
 	        //     return {
 	        //         candidates: candidates.map(this.mapCandidateToDto)
 	        //     }
 	        // });
 	    };
-	    return QsnIdsFacade;
+	    return QuestionFacade;
 	}());
-	QsnIdsFacade = __decorate([
+	QuestionFacade = __decorate([
 	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [QsnIds_service_1.QsnIdsServiceImpl])
-	], QsnIdsFacade);
-	exports.QsnIdsFacade = QsnIdsFacade;
+	    __metadata("design:paramtypes", [Question_service_1.QuestionServiceImpl])
+	], QuestionFacade);
+	exports.QuestionFacade = QuestionFacade;
 
 
 /***/ }),
@@ -17539,22 +17537,24 @@ module.exports =
 	AWS.config.update({
 	    region: "us-east-1"
 	});
-	var QsnIdsServiceImpl = (function () {
-	    function QsnIdsServiceImpl() {
-	        console.log("in QsnIdsServiceImpl constructor()");
+	var QuestionServiceImpl = (function () {
+	    function QuestionServiceImpl() {
+	        console.log("in QsnPaperServiceImpl constructor()");
 	    }
-	    QsnIdsServiceImpl.prototype.getAll = function () {
-	        console.log("in QsnIdsServiceImpl get()");
-	        var QsnIds = [];
+	    QuestionServiceImpl.prototype.getQsn = function (QsnId, Category) {
+	        console.log("in QsnPaperServiceImpl get()");
+	        var Q_array = ["Question1", "Question2", "Question6", "Question7"];
 	        var queryParams = {
-	            TableName: "QuestionId",
-	            ProjectionExpression: "QsnId",
-	            KeyConditionExpression: "#PaperId = :PaperId",
+	            TableName: "QuestionList",
+	            ProjectionExpression: "Category,QsnId, Qsn, Curct_ans, Opt1,Opt2, Opt3, Opt4,curct_ans,flag",
+	            KeyConditionExpression: "#Category = :Category and #QsnId = :QsnId",
 	            ExpressionAttributeNames: {
-	                "#PaperId": "PaperId",
+	                "#Category": "Category",
+	                "#QsnId": "QsnId"
 	            },
 	            ExpressionAttributeValues: {
-	                ":PaperId": "1",
+	                ":Category": Category,
+	                ":QsnId": QsnId
 	            },
 	        };
 	        var documentClient = new DocumentClient();
@@ -17573,21 +17573,23 @@ module.exports =
 	                    return;
 	                }
 	                data.Items.forEach(function (item) {
-	                    console.log("Qsn Id " + item.QsnId);
-	                    QsnIds.push(item.QsnId);
+	                    console.log("Category " + item.Category);
+	                    console.log("Qsn " + item.Qsn);
+	                    console.log("Curct_ans " + item.curct_ans);
+	                    console.log("Opt1 " + item.Opt1);
 	                });
 	                observer.next(data.Items);
 	                observer.complete();
 	            });
 	        });
 	    };
-	    return QsnIdsServiceImpl;
+	    return QuestionServiceImpl;
 	}());
-	QsnIdsServiceImpl = __decorate([
+	QuestionServiceImpl = __decorate([
 	    core_1.Injectable(),
 	    __metadata("design:paramtypes", [])
-	], QsnIdsServiceImpl);
-	exports.QsnIdsServiceImpl = QsnIdsServiceImpl;
+	], QuestionServiceImpl);
+	exports.QuestionServiceImpl = QuestionServiceImpl;
 
 
 /***/ }),
@@ -34594,28 +34596,28 @@ module.exports =
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(4);
-	var Question_service_1 = __webpack_require__(349);
-	var QuestionFacade = (function () {
-	    function QuestionFacade(QuestionService) {
-	        this.QuestionService = QuestionService;
+	var QsnIds_service_1 = __webpack_require__(349);
+	var QsnIdsFacade = (function () {
+	    function QsnIdsFacade(QsnIdsService) {
+	        this.QsnIdsService = QsnIdsService;
 	        console.log("in QsnPaperFacade constructor()");
 	    }
-	    QuestionFacade.prototype.getQsn = function (data) {
+	    QsnIdsFacade.prototype.getQsnId = function (PaperId) {
 	        console.log("in QsnPaperFacade getAll()");
-	        return this.QuestionService.getQsn(data);
+	        return this.QsnIdsService.getQsnId(PaperId);
 	        // .map((candidates) => {
 	        //     return {
 	        //         candidates: candidates.map(this.mapCandidateToDto)
 	        //     }
 	        // });
 	    };
-	    return QuestionFacade;
+	    return QsnIdsFacade;
 	}());
-	QuestionFacade = __decorate([
+	QsnIdsFacade = __decorate([
 	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [Question_service_1.QuestionServiceImpl])
-	], QuestionFacade);
-	exports.QuestionFacade = QuestionFacade;
+	    __metadata("design:paramtypes", [QsnIds_service_1.QsnIdsServiceImpl])
+	], QsnIdsFacade);
+	exports.QsnIdsFacade = QsnIdsFacade;
 
 
 /***/ }),
@@ -34640,24 +34642,21 @@ module.exports =
 	AWS.config.update({
 	    region: "us-east-1"
 	});
-	var QuestionServiceImpl = (function () {
-	    function QuestionServiceImpl() {
-	        console.log("in QsnPaperServiceImpl constructor()");
+	var QsnIdsServiceImpl = (function () {
+	    function QsnIdsServiceImpl() {
+	        console.log("in QsnIdsServiceImpl constructor()");
 	    }
-	    QuestionServiceImpl.prototype.getQsn = function (data) {
-	        console.log("in QsnPaperServiceImpl get()");
-	        var Q_array = ["Question1", "Question2", "Question6", "Question7"];
+	    QsnIdsServiceImpl.prototype.getQsnId = function (PaperId) {
+	        console.log("in QsnIdsServiceImpl get()");
 	        var queryParams = {
-	            TableName: "QuestionList",
-	            ProjectionExpression: "Category,QsnId, Qsn, Curct_ans, Opt1,Opt2, Opt3, Opt4,curct_ans,flag",
-	            KeyConditionExpression: "#Category = :Category and #QsnId = :QsnId",
+	            TableName: "QuestionId",
+	            ProjectionExpression: "QsnId",
+	            KeyConditionExpression: "#PaperId = :PaperId",
 	            ExpressionAttributeNames: {
-	                "#Category": "Category",
-	                "#QsnId": "QsnId"
+	                "#PaperId": "PaperId",
 	            },
 	            ExpressionAttributeValues: {
-	                ":Category": "Java",
-	                ":QsnId": data[0].QsnId
+	                ":PaperId": PaperId,
 	            },
 	        };
 	        var documentClient = new DocumentClient();
@@ -34676,27 +34675,122 @@ module.exports =
 	                    return;
 	                }
 	                data.Items.forEach(function (item) {
-	                    console.log("Category " + item.Category);
-	                    console.log("Qsn " + item.Qsn);
-	                    console.log("Curct_ans " + item.curct_ans[1]);
-	                    console.log("Opt1 " + item.Opt1);
+	                    console.log("Qsn Id " + item.QsnId);
 	                });
 	                observer.next(data.Items);
 	                observer.complete();
 	            });
 	        });
 	    };
-	    return QuestionServiceImpl;
+	    return QsnIdsServiceImpl;
 	}());
-	QuestionServiceImpl = __decorate([
+	QsnIdsServiceImpl = __decorate([
 	    core_1.Injectable(),
 	    __metadata("design:paramtypes", [])
-	], QuestionServiceImpl);
-	exports.QuestionServiceImpl = QuestionServiceImpl;
+	], QsnIdsServiceImpl);
+	exports.QsnIdsServiceImpl = QsnIdsServiceImpl;
 
 
 /***/ }),
 /* 350 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var QsnIds_service_1 = __webpack_require__(349);
+	var QsnIds_facade_1 = __webpack_require__(348);
+	var Question_service_1 = __webpack_require__(38);
+	var Question_facade_1 = __webpack_require__(3);
+	var Result_service_1 = __webpack_require__(351);
+	var Result_facade_1 = __webpack_require__(352);
+	exports.AppProviders = [
+	    QsnIds_service_1.QsnIdsServiceImpl,
+	    QsnIds_facade_1.QsnIdsFacade,
+	    Question_service_1.QuestionServiceImpl,
+	    Question_facade_1.QuestionFacade,
+	    Result_service_1.ResultServiceImpl,
+	    Result_facade_1.ResultFacade
+	];
+
+
+/***/ }),
+/* 351 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(4);
+	var rxjs_1 = __webpack_require__(39);
+	var aws_sdk_1 = __webpack_require__(347);
+	var AWS = __webpack_require__(347);
+	var DocumentClient = aws_sdk_1.DynamoDB.DocumentClient;
+	AWS.config.update({
+	    region: "us-east-1"
+	});
+	var ResultServiceImpl = (function () {
+	    function ResultServiceImpl() {
+	        console.log("in ResultServiceImpl constructor()");
+	    }
+	    ResultServiceImpl.prototype.update = function (data) {
+	        console.log("in ResultServiceImpl get()");
+	        var documentClient = new DocumentClient();
+	        var score;
+	        if (data.curct_ans === data.cand_ans)
+	            score = 1;
+	        else
+	            score = 0;
+	        var params = {
+	            TableName: "Result",
+	            Key: {
+	                BookingId: data.BookingId,
+	                QsnId: data.QsnId
+	            },
+	            ExpressionAttributeNames: {
+	                '#ci': 'CandidateId',
+	                '#a': 'curct_ans',
+	                '#ca': 'cand_ans',
+	                '#s': 'score'
+	            },
+	            ExpressionAttributeValues: {
+	                ':ci': data.CandidateId,
+	                ':a': data.curct_ans,
+	                ':ca': data.cand_ans,
+	                ':s': score
+	            },
+	            UpdateExpression: 'SET #ci = :ci,  #a=:a , #ca = :ca , #s =:s',
+	            ReturnValues: 'ALL_NEW',
+	        };
+	        return rxjs_1.Observable.create(function (observer) {
+	            documentClient.update(params, function (err, data) {
+	                if (err) {
+	                    console.error(err);
+	                    observer.error(err);
+	                    return;
+	                }
+	                console.log("result " + JSON.stringify(data));
+	                observer.next(data.Attributes);
+	                observer.complete();
+	            });
+	        });
+	    };
+	    return ResultServiceImpl;
+	}());
+	ResultServiceImpl = __decorate([
+	    core_1.Injectable(),
+	    __metadata("design:paramtypes", [])
+	], ResultServiceImpl);
+	exports.ResultServiceImpl = ResultServiceImpl;
+
+
+/***/ }),
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34732,92 +34826,6 @@ module.exports =
 	    __metadata("design:paramtypes", [Result_service_1.ResultServiceImpl])
 	], ResultFacade);
 	exports.ResultFacade = ResultFacade;
-
-
-/***/ }),
-/* 351 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var core_1 = __webpack_require__(4);
-	var rxjs_1 = __webpack_require__(39);
-	var aws_sdk_1 = __webpack_require__(347);
-	var AWS = __webpack_require__(347);
-	var DocumentClient = aws_sdk_1.DynamoDB.DocumentClient;
-	AWS.config.update({
-	    region: "us-east-1"
-	});
-	var ResultServiceImpl = (function () {
-	    function ResultServiceImpl() {
-	        console.log("in ResultServiceImpl constructor()");
-	    }
-	    ResultServiceImpl.prototype.update = function (data) {
-	        console.log("in ResultServiceImpl get()");
-	        var documentClient = new DocumentClient();
-	        var params = {
-	            TableName: "Result",
-	            Key: {
-	                BookingId: data.BookingId,
-	            },
-	            ExpressionAttributeNames: {
-	                '#ci': 'CandidateId',
-	            },
-	            ExpressionAttributeValues: {
-	                ':ci': data.CandidateId,
-	            },
-	            UpdateExpression: 'SET #ci = :ci',
-	            ReturnValues: 'ALL_NEW',
-	        };
-	        return rxjs_1.Observable.create(function (observer) {
-	            documentClient.update(params, function (err, data) {
-	                if (err) {
-	                    console.error(err);
-	                    observer.error(err);
-	                    return;
-	                }
-	                console.log("result " + JSON.stringify(data));
-	                observer.next(data.Attributes);
-	                observer.complete();
-	            });
-	        });
-	    };
-	    return ResultServiceImpl;
-	}());
-	ResultServiceImpl = __decorate([
-	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [])
-	], ResultServiceImpl);
-	exports.ResultServiceImpl = ResultServiceImpl;
-
-
-/***/ }),
-/* 352 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var QsnIds_service_1 = __webpack_require__(38);
-	var QsnIds_facade_1 = __webpack_require__(3);
-	var Question_service_1 = __webpack_require__(349);
-	var Question_facade_1 = __webpack_require__(348);
-	var Result_service_1 = __webpack_require__(351);
-	var Result_facade_1 = __webpack_require__(350);
-	exports.AppProviders = [
-	    QsnIds_service_1.QsnIdsServiceImpl,
-	    QsnIds_facade_1.QsnIdsFacade,
-	    Question_service_1.QuestionServiceImpl,
-	    Question_facade_1.QuestionFacade,
-	    Result_service_1.ResultServiceImpl,
-	    Result_facade_1.ResultFacade
-	];
 
 
 /***/ }),

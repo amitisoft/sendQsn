@@ -41,6 +41,36 @@ provider:
         - execute-api:Invoke
       Resource: "arn:aws:execute-api:us-east-1:*:*"
 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.QSNID_TABLE}"
+
+    - Effect: Allow
+      Action:
+        - execute-api:Invoke
+      Resource: "arn:aws:execute-api:us-east-1:*:*"
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.RESULT_TABLE}"
+
+    - Effect: Allow
+      Action:
+        - execute-api:Invoke
+      Resource: "arn:aws:execute-api:us-east-1:*:*"
+
 functions:
 
   getAllQsnIdsFunction:
@@ -60,7 +90,7 @@ functions:
     events:
       - http:
           path: api/updateResult
-          method: get
+          method: post
 #          authorizer: arn:aws:lambda:us-east-1:917291829364:function:hr-auth-master-dev-authorize
 #          resultTtlInSeconds: 0
           cors: true

@@ -11,23 +11,24 @@ export class GetQsnIdsHandler {
 
     let pathParameters = httpContext.getPathParameters();
         console.log(JSON.stringify(pathParameters));
-
+    let dataFromUI = httpContext.getRequestBody();
         let data = httpContext.getRequestBody();
-        injector.get(QsnIdsFacade).getAll()
-            .subscribe(result => {
 
-                httpContext.ok(200, result);
-                  injector.get(QuestionFacade).getQsn(result)
-                    .subscribe(result1 => {
-                        console.log("Qsn = ",result1);
-                         httpContext.ok(200, result1);
-                         injector.get(ResultFacade).update(data)
-                          .subscribe(result2 => {
-                          httpContext.ok(200, result2);
-                          });
-                  });
-            },  err => {
-                httpContext.fail(err, 500);
-        });
-    }
+        //  injector.get(QsnIdsFacade).getQsnId(data["PaperId"])
+        //      .subscribe(result => {
+
+        //          httpContext.ok(200, result);
+        //           injector.get(QuestionFacade).getQsn(result)
+        //             .subscribe(result1 => {
+        //                 console.log("Qsn = ",result1);
+        //                //  httpContext.ok(200, result1);
+        //                  injector.get(ResultFacade).update(data)
+        //                   .subscribe(result2 => {
+        //                   httpContext.ok(200, result2);
+        //                   });
+        //          });
+    //         },  err => {
+    //             httpContext.fail(err, 500);
+    //    });
+     }
 }

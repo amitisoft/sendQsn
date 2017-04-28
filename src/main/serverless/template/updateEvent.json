@@ -1,7 +1,13 @@
 {
 	"body": {
-		"BookingId":"2",
-		"CandidateId": "1"
+		"PaperId": "1",
+		"QsnNo": "0",
+		"Category":"Java",
+		"BookingId":"1",
+		"CandidateId": "2",
+		"QsnId": "3",
+		"curct_ans": "4",
+		"cand_ans": "5"
 		
 	}
 }

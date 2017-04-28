@@ -12,10 +12,10 @@ export class QsnIdsFacade {
         console.log("in QsnPaperFacade constructor()");
     }
 
-    getAll(): Observable<QsnIdsDto[]> {
+    getQsnId(PaperId:string): Observable<QsnIdsDto[]> {
         console.log("in QsnPaperFacade getAll()");
 
-        return this.QsnIdsService.getAll();
+        return this.QsnIdsService.getQsnId(PaperId);
             // .map((candidates) => {
             //     return {
             //         candidates: candidates.map(this.mapCandidateToDto)
