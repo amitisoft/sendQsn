@@ -1,6 +1,7 @@
 {
 	"body": {
-        "Candidate_id":"3",
-		"Category": "JavaScript"
+		"BookingId":"2",
+		"CandidateId": "1"
+		
 	}
 }
